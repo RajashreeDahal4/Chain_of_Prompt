@@ -5,10 +5,10 @@ import faiss
 from langchain.llms import OpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
-from functions import create_query_message,query_gpt,bounding_boxes
+from functions import convert_str_to_dict,create_query_message,query_gpt
 import re
 
-
+from cmr_query import bounding_boxes,generate_cmr_query,get_collection_ids_from_url_lists
 from load_files import load_pickle_files
 from prompt import prompt
 
@@ -18,15 +18,9 @@ sentence_embeddings=load_pickle_files(config["saved_filepath"],'embeddings.pkl')
 model=load_pickle_files(config["saved_filepath"],'model.pkl')
 unique_gcmd_science_keywords=load_pickle_files(config["saved_filepath"],'gcmd_keywords.pkl')
 
-# # non_alphanumeric_keywords = [keyword for keyword in unique_gcmd_science_keywords if re.search(r'[^\w\s]+', keyword)]
-# # non_alphanumeric_keywords = [char for string in unique_gcmd_science_keywords for char in re.findall(r'[^\w\s]+', string)]
-
-# # print(list(set(non_alphanumeric_keywords)))
-
 # Faiss IndexFlat2D
 d = sentence_embeddings.shape[1]
 index = faiss.IndexFlatL2(d)
-print(index.is_trained)
 index.add(sentence_embeddings)
 
 #  Authenticate LLM
@@ -41,5 +35,8 @@ conversation_buf = ConversationChain(
 query_message=create_query_message(prompt)
 first_result=query_gpt(conversation_buf,query_message)
 
+query_result=convert_str_to_dict(first_result['response'])
+gcmd_urls = generate_cmr_query(conversation_buf,query_result,model,index,unique_gcmd_science_keywords)
 
-coordinates=bounding_boxes("London")
+collections=get_collection_ids_from_url_lists(gcmd_urls)
+print("The collections are",collections)
