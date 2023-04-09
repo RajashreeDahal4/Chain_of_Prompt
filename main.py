@@ -12,6 +12,8 @@ from cmr_query import bounding_boxes,generate_cmr_query,get_collection_ids_from_
 from load_files import load_pickle_files
 from prompt import prompt
 
+import streamlit as st
+
 with open("config.json", encoding="utf-8") as file_data:
         config = json.load(file_data)
 sentence_embeddings=load_pickle_files(config["saved_filepath"],'embeddings.pkl')
@@ -23,20 +25,30 @@ d = sentence_embeddings.shape[1]
 index = faiss.IndexFlatL2(d)
 index.add(sentence_embeddings)
 
+
+def load_chain():
 #  Authenticate LLM
-llm=OpenAI(model_name='gpt-3.5-turbo',openai_api_key="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")
+    llm=OpenAI(model_name='gpt-3.5-turbo',openai_api_key="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")
 
-conversation_buf = ConversationChain(
-    llm=llm,
-    memory=ConversationBufferWindowMemory(k=5)
-)
+    conversation_buf = ConversationChain(
+        llm=llm,
+        memory=ConversationBufferWindowMemory(k=5)
+    )
+    return conversation_buf
+
+chain=load_chain()
 
 
-query_message=create_query_message(prompt)
-first_result=query_gpt(conversation_buf,query_message)
+def get_text():
+      text=st.text_input("Enter what you want to search in CMR:", key="input")
+      return text
 
-query_result=convert_str_to_dict(first_result['response'])
-gcmd_urls = generate_cmr_query(conversation_buf,query_result,model,index,unique_gcmd_science_keywords)
+user_input=get_text()
 
-collections=get_collection_ids_from_url_lists(gcmd_urls)
-print("The collections are",collections)
+if user_input:
+    query_message=create_query_message(prompt,user_input)
+    first_result=query_gpt(chain,query_message)
+    query_result=convert_str_to_dict(first_result['response'])
+    gcmd_urls = generate_cmr_query(chain,query_result,model,index,unique_gcmd_science_keywords)
+    collections=get_collection_ids_from_url_lists(gcmd_urls)
+    st.write(collections)
