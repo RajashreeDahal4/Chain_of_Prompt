@@ -1,0 +1,7 @@
+{
+    "saved_filepath":"saved_files/",
+    "embeddings_file":"embeddings.pkl",
+    "model_file":"model.pkl",
+    "gcmd_keywords_file":"gcmd_keywords.pkl"
+    
+    }
