@@ -3,16 +3,17 @@ import urllib
 import requests
 import streamlit as st
 
-def create_query_message(prompt,text):
+def create_query_message(prompt):
   '''
   This function generates the mesaage to query chatgpt3.5
   returns str: query_message
   '''
-  # text = input("Enter what you want to search in CMR: ")
+  text = input("Enter what you want to search in CMR: ")
   # text=st.text_input("Enter what you want to search in CMR:", key="input")
-  print("the text is")
   query_message = prompt + "Q \"" + text + "\""
   return query_message
+
+
 
 def query_gpt(chain,query_message):
   result=chain(query_message)

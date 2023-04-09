@@ -32,23 +32,43 @@ def load_chain():
 
     conversation_buf = ConversationChain(
         llm=llm,
-        memory=ConversationBufferWindowMemory(k=5)
+        memory=ConversationBufferWindowMemory(k=20)
     )
     return conversation_buf
 
 chain=load_chain()
 
 
-def get_text():
-      text=st.text_input("Enter what you want to search in CMR:", key="input")
-      return text
+# def get_text():
+#       text=st.text_input("Enter what you want to search in CMR:", key="input")
+#       return text
 
-user_input=get_text()
+# user_input=get_text()
 
-if user_input:
-    query_message=create_query_message(prompt,user_input)
-    first_result=query_gpt(chain,query_message)
-    query_result=convert_str_to_dict(first_result['response'])
-    gcmd_urls = generate_cmr_query(chain,query_result,model,index,unique_gcmd_science_keywords)
-    collections=get_collection_ids_from_url_lists(gcmd_urls)
-    st.write(collections)
+# if user_input:
+query_message=create_query_message(prompt)
+first_result=query_gpt(chain,query_message)
+query_result=convert_str_to_dict(first_result['response'])
+gcmd_urls = generate_cmr_query(chain,query_result,model,index,unique_gcmd_science_keywords)
+collections,names,locations=get_collection_ids_from_url_lists(gcmd_urls)
+names=list(set(names))
+    # st.write(collections)
+# # query_message=create_query_message(prompt)
+collection_text="Here are all the collection ids : "+str(collections)
+not_important=query_gpt(chain,collection_text)
+
+# names_text="Why don't you add these values in your history of names: "+str(names)+ "which in reality is a python list?"
+# not_important=query_gpt(chain,names_text)
+
+locations_text="Here are all the cmr links for the collection: "+str(locations)
+not_important=query_gpt(chain,locations_text)
+
+names_text="Here are all the collection names: "+str(names)
+not_important=query_gpt(chain,names_text)
+
+second_query_message = input("What else do you need? ")
+while(second_query_message != "exit" and second_query_message != "Exit"):
+    response = query_gpt(chain,second_query_message)
+#   print(inp != "exit" and inp != "Exit")
+    print("The response",response['response'])
+    second_query_message = input("What else do you need?")

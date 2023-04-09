@@ -28,6 +28,7 @@ def bounding_boxes(city):
 
     response = requests.get(url)
     if response.status_code == 200:
+        print(city)
         data = response.json()
         bounding_box=data[0]["boundingbox"]
         #writing in the format lower left longitude, lower left latitude, upper right longitude, upper right latitude.
@@ -91,6 +92,8 @@ def generate_cmr_query(conversation_buf,result,model,index,unique_gcmd_science_k
 
 def get_collection_ids_from_url_lists(list_of_urls):
     concept_ids=[]
+    names=[]
+    locations=[]
     count=0
     for url in list_of_urls:
         response= requests.get(url)
@@ -99,4 +102,6 @@ def get_collection_ids_from_url_lists(list_of_urls):
         reference=data_dict['results']['references']['reference']
         for i in reference:
             concept_ids.append(i["id"])
-    return concept_ids
+            names.append(i["name"])
+            locations.append(i["location"])
+    return concept_ids,names,locations
