@@ -98,7 +98,7 @@ def get_collection_ids_from_url_lists(list_of_urls):
         response= requests.get(url)
         data_dict=xmltodict.parse(response.content)
         data=json.dumps(data_dict)
-        print("the data dict is",data_dict)
+        # print("the data dict is",data_dict)
         reference=data_dict['results']['references']['reference']
         for i in reference:
             concept_ids.append(i["id"])

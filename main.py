@@ -83,9 +83,10 @@ if user_input:
     count=0
     while(second_query_message != "exit" and second_query_message != "Exit" and second_query_message):
         response = query_gpt(chain,second_query_message)
+        print(chain)
     #   print(inp != "exit" and inp != "Exit")
         # print(response['response'])
         # print(response['response'])
         st.write(response["response"])
-        second_query_message = st.text_input("What else do you need?",key=count)
+        second_query_message = st.text_input("What else do you need?",key=str(count))
         count=count+1
