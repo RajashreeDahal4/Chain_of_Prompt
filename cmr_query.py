@@ -28,7 +28,6 @@ def bounding_boxes(city):
 
     response = requests.get(url)
     if response.status_code == 200:
-        print(city)
         data = response.json()
         bounding_box=data[0]["boundingbox"]
         #writing in the format lower left longitude, lower left latitude, upper right longitude, upper right latitude.
@@ -99,6 +98,7 @@ def get_collection_ids_from_url_lists(list_of_urls):
         response= requests.get(url)
         data_dict=xmltodict.parse(response.content)
         data=json.dumps(data_dict)
+        print("the data dict is",data_dict)
         reference=data_dict['results']['references']['reference']
         for i in reference:
             concept_ids.append(i["id"])
