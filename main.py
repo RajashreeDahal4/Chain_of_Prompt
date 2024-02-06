@@ -30,7 +30,7 @@ index.add(sentence_embeddings)
 
 def load_chain():
 #  Authenticate LLM
-    llm=OpenAI(model_name='gpt-3.5-turbo',openai_api_key="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")
+    llm=OpenAI(model_name='gpt-3.5-turbo',openai_api_key="")
 
     conversation_buf = ConversationChain(
         llm=llm,
